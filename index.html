@@ -1,1 +1,257 @@
-Hello World
+<!DOCTYPE html>
+<html>
+<style>
+.outer {
+    position: absolute;
+    z-index: 9;
+    background-color: #f1f1f1;
+    text-align: center;
+    border: 1px solid #d3d3d3;
+  
+    max-height: 80px;
+    font-size: 10px;
+}
+
+.header {
+    padding: 5px;
+    cursor: move;
+    z-index: 10;
+    background-color: #2196F3;
+    color: #fff;
+    height: 12px;
+}
+
+.header-general {
+    padding: 5px;
+    cursor: move;
+    z-index: 10;
+    background-color: rgb(121, 126, 129);
+    color: #fff;
+    height: 12px;
+}
+
+.steps {
+  background: linear-gradient(to bottom, 
+ white 0%, 
+ white 16.66%, 
+
+ orange 16.66%, 
+ orange 24.994%, 
+
+ yellow 24.994%, 
+ yellow 33.328%, 
+
+ green 33.328%, 
+ green 41.662%, 
+
+ blue 41.662%, 
+ blue 49.996%, 
+
+ indigo 49.996%, 
+ indigo 58.33%, 
+
+ violet 58.33%, 
+ violet 66.664%,
+
+ #bfff00 66.664%, 
+ #bfff00 74.998%,
+
+ #00ffff 74.998%, 
+ #00ffff 83.332%,
+
+ red 83.332%, 
+ red 91.666%,
+
+ #8486f7 91.666%, 
+ #8486f7 100%
+ );
+}
+
+table {
+  font-size: 30px;
+}
+
+td {
+  height: 97px;
+}
+th {
+  height: 70px;
+}
+
+</style>
+<body class="steps">
+
+<h1>Crowd sourcing for recruitment skills</h1>
+<p>Drag the elements into suitable places then client "Done" below</p>
+<button id="send-result">I'm done!</button>
+
+<script>
+
+const dragElement = (elmnt) => {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    elmnt.onmousedown = dragMouseDown;
+  }
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+const buildSkillDiv = (fullName, desc, isScala) => {
+  const normalizedName = fullName.replace(/ /g, "_");
+
+  const outer = document.createElement("div");
+  outer.className = "outer";
+  outer.id = normalizedName;
+
+  const header = document.createElement("div");
+  header.className = (isScala)? "header" : "header-general";
+  header.id = normalizedName + "header";
+  header.innerHTML = "Click here to move";
+
+  const nameParagraph = document.createElement("p");
+  nameParagraph.innerText = fullName + "(" + desc + ")"; 
+
+  outer.appendChild(header);
+  outer.appendChild(nameParagraph);
+  
+  document.body.appendChild(outer);
+  if(isScala) {
+    outer.style.left = "400px";
+  } else {
+    outer.style.left = "600px";
+  }
+  dragElement(outer);
+
+  return [normalizedName, outer];
+};
+
+const scalaSkills = [
+  ["Scala syntax", "if, for, pattern matching etc."], 
+  ["Akka basics", "plain actors, supervision, etc."],
+  ["Advanced Akka", "clustering, sharding etc."],
+  ["Basic Play", "routes, controllers etc."], 
+  ["Advanced Play", "body parsers, i18n etc."],
+  ["Basic persistence", "defining the schema, simple queries etc."],
+  ["Advanced persistence", "comaplex queries and domains etc."], 
+  ["Basic FP", "pure functions, FP with Scala primitives"],
+  ["Advanced FP", "Kleisli, Free etc."],
+  ["Metaprogramming with Shapeless", ""], 
+  ["Basic OOP", "classes, inheritance etc."],
+  ["Advanced OOP", "go4 patterns etc."],
+  ["Basic JVM knowledge", "GC etc."],
+  ["Basic async", "Futures, Promises etc."],
+  ["Advanced async", "various models and their strengths etc."],
+  ["Apache Spark, Flink or similar", "for big data processing"], 
+  ["Stream processing", "in-process streams like Akka Streams, fs2 etc."],
+  ["Scala Test", "ST, scala check or similar framework"],
+];
+const scalaSkillsDivs = scalaSkills.map(n => buildSkillDiv(n[0], n[1], true));
+
+const generalSkills = [
+  ["Category theory", ""],
+  ["Data structures", "their characteristics and usages"], 
+  ["Basic SQL", "SELECT, aggregations, joins, indexes etc."],
+  ["Advanced SQL", "VIEWS, isoaltion levels, etc."], 
+  ["Performance optimziations", ""],
+  ["Debugging", ""], 
+  ["Testing", "TDD, BDD etc."], 
+  ["Basic NoSQL", "1 DB, querying, basic modelling etc."],
+  ["Advanced NoSQL", "2 distinct DBs, querying, advanced modelling etc."],
+  ["Mentoring teammates", ""], 
+  ["Kubernetes or similar", "K8, docker swarm, mesos/marathon etc."],
+  ["Kafka or similar", "Kafka, RabbitMQ etc."], 
+  ["Domain Driven Design", "bounded context, anit-coorruption laters, modelling etc."],
+  ["Cloud Native patterns", "service discovery, event driven, externalized state etc."],
+  ["Leadership", "Leading a small team"], 
+  ["Problem solving", "Decomposing problems, analizing evidence etc."],
+  ["RESTful API design ", "REST over Http"], 
+  ["Protocol design", "designing a safe and reliable exchange of information between services"],
+];
+const generalSkillsDivs = generalSkills.map(n => buildSkillDiv(n[0], n[1], false));
+
+const gotoEmail = () => {
+  const decisions = scalaSkillsDivs.concat(generalSkillsDivs).map(d => [d[0], (d[1].offsetTop - 200)/100]);
+  const formatted = decisions.map(d => d[0] + "," + d[1]).join("\n");
+  const mailToLink = "mailto:patryk@scalac.io?subject=Recru&body=" + encodeURIComponent(formatted);
+  window.location.href = mailToLink;
+};
+
+document.getElementById("send-result").addEventListener("click", gotoEmail, false);
+
+document.body.style.height = 1200 + "px";
+
+</script>
+
+<table>
+    <thead>
+      <th>Years of experience</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>3</td>
+      </tr>
+      <tr>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td>5</td>
+      </tr>
+      <tr>
+        <td>6</td>
+      </tr>
+      <tr>
+        <td>7</td>
+      </tr>
+      <tr>
+        <td>8</td>
+      </tr>
+      <tr>
+        <td>9+</td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
+
